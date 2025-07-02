@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
 import { z } from "zod";
 
 interface ICidade {
   nome: string;
+  estado: string;
 }
 
 const bodyValidation: z.ZodType<ICidade> = z.object({
@@ -12,12 +13,12 @@ const bodyValidation: z.ZodType<ICidade> = z.object({
   estado: z.string().min(3),
 });
 
-export const create = async (req: Request<{}, {}, ICidade>, res: Response) => {
-
-  let validatedData: ICidade | undefined = undefined;
-
+export const createBodyValidator: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    validatedData = await bodyValidation.parseAsync(req.body);
+    const validatedData = await bodyValidation.parseAsync(req.body);
+    req.body = validatedData;
+
+    return next();
   } catch (err) {
     const zodError = err as z.ZodError;
     const errors: Record<string, string> = {};
@@ -29,10 +30,20 @@ export const create = async (req: Request<{}, {}, ICidade>, res: Response) => {
       errors[path] = issue.message;
     });
 
-    return res.status(StatusCodes.BAD_REQUEST).json({errors: errors,});
+    res.status(StatusCodes.BAD_REQUEST).json({ errors });
+
+    return
   }
+};
 
-  console.log("Validated data:", validatedData);
+export const create: RequestHandler = async (req: Request<{}, {}, ICidade>, res: Response) => {
 
-  return res.send("Create city endpoint!");
+  console.log("Request body:", req.body);
+
+  res.status(StatusCodes.CREATED).json({
+    message: "Cidade criada com sucesso",
+    data: req.body,
+  });
+
+  return;
 }
