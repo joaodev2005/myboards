@@ -1,6 +1,6 @@
-import { Request, RequestHandler, Response, NextFunction } from "express";
+import { Request, RequestHandler, Response} from "express";
 import { StatusCodes } from "http-status-codes";
-
+import { validation } from "../../shared/middlewares";
 import { z } from "zod";
 
 interface ICidade {
@@ -8,33 +8,20 @@ interface ICidade {
   estado: string;
 }
 
-const bodyValidation: z.ZodType<ICidade> = z.object({
+interface IFilter {
+  filter?: string;
+  //limit?: number;
+}
+
+export const createValidation = validation((getSchema) => ({ 
+  body: getSchema<ICidade>(z.object({
   nome: z.string().min(3),
   estado: z.string().min(3),
-});
-
-export const createBodyValidator: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const validatedData = await bodyValidation.parseAsync(req.body);
-    req.body = validatedData;
-
-    return next();
-  } catch (err) {
-    const zodError = err as z.ZodError;
-    const errors: Record<string, string> = {};
-
-    zodError.issues.forEach(issue => {
-      if (!issue.path) return;
-
-      const path = issue.path.join(".");
-      errors[path] = issue.message;
-    });
-
-    res.status(StatusCodes.BAD_REQUEST).json({ errors });
-
-    return
-  }
-};
+})),
+  query: getSchema<IFilter>(z.object({
+    filter: z.string().min(3).optional(),
+  })),
+}));
 
 export const create: RequestHandler = async (req: Request<{}, {}, ICidade>, res: Response) => {
 

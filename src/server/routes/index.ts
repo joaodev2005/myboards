@@ -7,6 +7,6 @@ router.get("/", (req, res) => {
   res.send("opa calabreso");
 });
 
-router.post("/cidades", CidadesController.createBodyValidator, CidadesController.create);
+router.post("/cidades", CidadesController.createValidation, CidadesController.create);
 
 export { router };
