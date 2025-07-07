@@ -1,0 +1,34 @@
+import { Request, RequestHandler, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { validation } from "../../shared/middlewares";
+import { z } from "zod";
+
+interface IParamProps {
+  id?: number;
+}
+
+interface IBodyProps {
+  name: string;
+}
+
+export const updateByIdValidation = validation((getSchema) => ({
+  body: getSchema<IBodyProps>(z.object({
+    name: z.string().min(3),
+  })),
+  params: getSchema<IParamProps>(z.object({
+    id: z.coerce.number().gt(0).int().positive(),
+  })),
+}));
+
+export const updateById = async (req:  Request<IParamProps, {}, IBodyProps>, res: Response) => {
+
+  console.log("Request params:", req.params);
+  console.log("Request body:", req.body);
+
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    message: "Not implemented",
+    data: req.body,
+  });
+
+  return;
+}
