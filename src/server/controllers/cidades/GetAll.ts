@@ -21,7 +21,7 @@ export const getAll: RequestHandler = async (req: Request<{}, {}, {}, IQuerryPro
 
   console.log("Request body:", req.query);
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+  res.status(StatusCodes.OK).json({
     message: "Not implemented",
     data: req.body,
   });
