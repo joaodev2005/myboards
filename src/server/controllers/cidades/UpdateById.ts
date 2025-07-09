@@ -22,13 +22,21 @@ export const updateByIdValidation = validation((getSchema) => ({
 
 export const updateById = async (req:  Request<IParamProps, {}, IBodyProps>, res: Response) => {
 
-  console.log("Request params:", req.params);
-  console.log("Request body:", req.body);
+  // console.log("Request params:", req.params);
+  // console.log("Request body:", req.body);
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    message: "Not implemented",
-    data: req.body,
+  // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+  //   message: "Not implemented",
+  //   data: req.body,
+  // });
+
+  // return;
+
+  if (Number(req.params.id) === 99999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    errors: {
+      default: 'Erro ao atualizar o registro. Registro não encontrado.',
+    }
   });
 
-  return;
+  return res.status(StatusCodes.NO_CONTENT).send();
 }

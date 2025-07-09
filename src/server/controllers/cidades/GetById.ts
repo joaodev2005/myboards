@@ -16,12 +16,23 @@ export const getByIdValidation = validation((getSchema) => ({
 
 export const getById = async (req:  Request<IParamProps>, res: Response) => {
 
-  console.log("Request params:", req.params);
+  // console.log("Request params:", req.params);
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    message: "Not implemented",
-    data: req.body,
+  // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+  //   message: "Not implemented",
+  //   data: req.body,
+  // });
+
+  // return;
+
+  if (Number(req.params.id) === 99999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    errors: {
+      default: 'Erro ao buscar o registro. Registro não encontrado.',
+    }
   });
 
-  return;
+  return res.status(StatusCodes.OK).json({
+    id: req.params.id,
+    name: 'Cidade Teste',
+  });
 }

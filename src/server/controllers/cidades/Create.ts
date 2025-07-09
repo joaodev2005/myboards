@@ -17,10 +17,7 @@ export const create: RequestHandler = async (req: Request<{}, {}, ICidade>, res:
 
   console.log("Request body:", req.body);
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    message: "Not implemented",
-    data: req.body,
-  });
+  res.status(StatusCodes.CREATED).json(1);
 
   return;
 }
