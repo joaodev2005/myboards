@@ -33,6 +33,6 @@ export const getById = async (req:  Request<IParamProps>, res: Response) => {
 
   return res.status(StatusCodes.OK).json({
     id: req.params.id,
-    name: 'Cidade Teste',
+    nome: 'Cidade Teste',
   });
 }

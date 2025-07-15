@@ -8,12 +8,12 @@ interface IParamProps {
 }
 
 interface IBodyProps {
-  name: string;
+  nome: string;
 }
 
 export const updateByIdValidation = validation((getSchema) => ({
   body: getSchema<IBodyProps>(z.object({
-    name: z.string().min(3),
+    nome: z.string().min(3),
   })),
   params: getSchema<IParamProps>(z.object({
     id: z.coerce.number().gt(0).int().positive(),

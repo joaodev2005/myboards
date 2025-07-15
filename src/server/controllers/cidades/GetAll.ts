@@ -33,7 +33,7 @@ export const getAll: RequestHandler = async (req: Request<{}, {}, {}, IQuerryPro
   res.status(StatusCodes.OK).json([
     {
       id: 1,
-      name: 'Cidade Teste',
+      nome: 'Cidade Teste',
     }
   ])
 

@@ -12,7 +12,7 @@ describe('Cidades - DeleteById', () => {
     expect(res1.statusCode).toEqual(StatusCodes.CREATED);
 
     const resApagada = await testServer
-      .delete(`/cidades/${res1.body.id}`)
+      .delete(`/cidades/${res1.body}`)
 
     expect(resApagada.statusCode).toEqual(StatusCodes.NO_CONTENT);
   });
