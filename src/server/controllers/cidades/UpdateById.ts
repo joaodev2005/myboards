@@ -1,15 +1,14 @@
 import { Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
+import { ICidade } from "../../database/models/Cidade";
 import { z } from "zod";
 
 interface IParamProps {
   id?: number;
 }
 
-interface IBodyProps {
-  nome: string;
-}
+interface IBodyProps extends Omit<ICidade, 'id'> {}
 
 export const updateByIdValidation = validation((getSchema) => ({
   body: getSchema<IBodyProps>(z.object({
