@@ -2,6 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
 import { ICidade } from "../../database/models/Cidade";
+import { CidadesProvider } from "../../database/providers/cidades";
 import { z } from "zod";
 
 interface IParamProps {
@@ -21,21 +22,24 @@ export const updateByIdValidation = validation((getSchema) => ({
 
 export const updateById = async (req:  Request<IParamProps, {}, IBodyProps>, res: Response) => {
 
-  // console.log("Request params:", req.params);
-  // console.log("Request body:", req.body);
+  if (!req.params.id) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      errors: {
+        default: 'ID do registro não informado.',
+      },
+    });
+  }
 
-  // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-  //   message: "Not implemented",
-  //   data: req.body,
-  // });
+  const result = await CidadesProvider.updateById(req.params.id, req.body);
 
-  // return;
-
-  if (Number(req.params.id) === 99999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    errors: {
-      default: 'Erro ao atualizar o registro. Registro não encontrado.',
-    }
-  });
+  if (result instanceof Error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: result.message,
+      },
+    });
+  }
 
   return res.status(StatusCodes.NO_CONTENT).send();
+  
 }

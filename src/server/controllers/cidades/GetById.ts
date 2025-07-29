@@ -1,7 +1,7 @@
 import { Request, Response, RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
-
+import { CidadesProvider } from "../../database/providers/cidades";
 import { validation } from "../../shared/middlewares";
 
 interface IParamProps {
@@ -16,23 +16,23 @@ export const getByIdValidation = validation((getSchema) => ({
 
 export const getById = async (req:  Request<IParamProps>, res: Response) => {
 
-  // console.log("Request params:", req.params);
+  if (!req.params.id) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      errors: {
+        default: 'ID do registro não informado.',
+      },
+    });
+  }
 
-  // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-  //   message: "Not implemented",
-  //   data: req.body,
-  // });
+  const result = await CidadesProvider.getById(req.params.id);
 
-  // return;
+  if (result instanceof Error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: result.message,
+      },
+    });
+  }
 
-  if (Number(req.params.id) === 99999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    errors: {
-      default: 'Erro ao buscar o registro. Registro não encontrado.',
-    }
-  });
-
-  return res.status(StatusCodes.OK).json({
-    id: req.params.id,
-    nome: 'Cidade Teste',
-  });
+  return res.status(StatusCodes.OK).json(result);
 }
