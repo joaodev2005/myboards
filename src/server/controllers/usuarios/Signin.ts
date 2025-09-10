@@ -1,0 +1,44 @@
+import { RequestHandler} from "express";
+import { StatusCodes } from "http-status-codes";
+import { validation } from "../../shared/middlewares";
+import { IUsuario } from "../../database/models/Usuario";
+import { UsuariosProvider } from "../../database/providers/usuarios";
+import { z } from "zod";
+
+interface IBodyProps extends Omit<IUsuario, 'id' | 'nome'> {}
+
+export const signInValidation = validation((getSchema) => ({
+  body: getSchema<IBodyProps>(z.object({
+    email: z.string().email().min(5).email(),
+    senha: z.string().min(6),
+  })),
+}));
+
+export const signIn: RequestHandler = async (req, res) => {
+
+  const { email, senha } = req.body;
+
+  const result = await UsuariosProvider.getByEmail(email);
+
+  if (result instanceof Error) {
+    res.status(StatusCodes.UNAUTHORIZED).json({
+      errors: {
+        default: 'Erro ao buscar usuário',
+      },
+    });
+    return;
+  }
+
+
+  if (senha !== result.senha) {
+    res.status(StatusCodes.UNAUTHORIZED).json({
+      errors: {
+        default: 'Erro ao buscar usuário',
+      },
+    });
+    return;
+  } else {
+    res.status(StatusCodes.OK).json({ accessToken: 'teste.teste.teste' });
+    return;
+  }
+};
