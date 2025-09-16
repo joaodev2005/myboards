@@ -4,6 +4,7 @@ import { validation } from "../../shared/middlewares";
 import { IUsuario } from "../../database/models/Usuario";
 import { UsuariosProvider } from "../../database/providers/usuarios";
 import { z } from "zod";
+import { PasswordCrypto } from "../../shared/services";
 
 interface IBodyProps extends Omit<IUsuario, 'id' | 'nome'> {}
 
@@ -29,8 +30,9 @@ export const signIn: RequestHandler = async (req, res) => {
     return;
   }
 
+  const passwordMatch = await PasswordCrypto.verifyPassword(senha, result.senha);
 
-  if (senha !== result.senha) {
+  if (!passwordMatch) {
     res.status(StatusCodes.UNAUTHORIZED).json({
       errors: {
         default: 'Erro ao buscar usuário',
