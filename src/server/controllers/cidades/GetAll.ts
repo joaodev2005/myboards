@@ -24,6 +24,8 @@ export const getAll: RequestHandler = async (req: Request<{}, {}, {}, IQuerryPro
   const result = await CidadesProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || "", req.query.id);
   const count = await CidadesProvider.count(req.query.filter);
 
+  console.log(req.headers.idUsuario);
+
   if (result instanceof Error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: result.message });
     return;  

@@ -1,12 +1,12 @@
-import { RequestHandler} from "express";
+import { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
 import { IUsuario } from "../../database/models/Usuario";
 import { UsuariosProvider } from "../../database/providers/usuarios";
 import { z } from "zod";
-import { PasswordCrypto } from "../../shared/services";
+import { JWTService, PasswordCrypto } from "../../shared/services";
 
-interface IBodyProps extends Omit<IUsuario, 'id' | 'nome'> {}
+interface IBodyProps extends Omit<IUsuario, 'id' | 'nome'> { }
 
 export const signInValidation = validation((getSchema) => ({
   body: getSchema<IBodyProps>(z.object({
@@ -40,7 +40,19 @@ export const signIn: RequestHandler = async (req, res) => {
     });
     return;
   } else {
-    res.status(StatusCodes.OK).json({ accessToken: 'teste.teste.teste' });
+
+    const accessToken = JWTService.sign({ uid: result.id });
+
+    if (accessToken === 'JWT_SECRET not defined') {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        errors: {
+          default: 'Erro ao gerar token de acesso',
+        },
+      });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ accessToken });
     return;
   }
 };
